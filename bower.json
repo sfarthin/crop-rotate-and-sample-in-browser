@@ -1,0 +1,17 @@
+{
+  "name": "image-manipulation",
+  "version": "0.0.1",
+  "homepage": "https://github.com/sfarthin/crop-rotate-and-sample-in-browser",
+  "authors": [
+    "Steven Farthing <sfarthin@gmail.com>"
+  ],
+  "main": "build/image-manipulation.js",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

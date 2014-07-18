@@ -110,6 +110,98 @@ var BinaryFile = module.exports = function(strData, iDataOffset, iDataLength) {
 }	
 },{}],2:[function(require,module,exports){
 /*
+ * JavaScript Canvas to Blob 2.0.5
+ * https://github.com/blueimp/JavaScript-Canvas-to-Blob
+ *
+ * Copyright 2012, Sebastian Tschan
+ * https://blueimp.net
+ *
+ * Licensed under the MIT license:
+ * http://www.opensource.org/licenses/MIT
+ *
+ * Based on stackoverflow user Stoive's code snippet:
+ * http://stackoverflow.com/q/4998908
+ */
+
+/*jslint nomen: true, regexp: true */
+/*global window, atob, Blob, ArrayBuffer, Uint8Array, define */
+
+
+module.exports = function(dataURLInput) {
+
+	var CanvasPrototype = window.HTMLCanvasElement &&
+	        window.HTMLCanvasElement.prototype,
+	    hasBlobConstructor = window.Blob && (function () {
+	        try {
+	            return Boolean(new Blob());
+	        } catch (e) {
+	            return false;
+	        }
+	    }()),
+	    hasArrayBufferViewSupport = hasBlobConstructor && window.Uint8Array &&
+	        (function () {
+	            try {
+	                return new Blob([new Uint8Array(100)]).size === 100;
+	            } catch (e) {
+	                return false;
+	            }
+	        }()),
+	    BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder ||
+	        window.MozBlobBuilder || window.MSBlobBuilder,
+	    dataURLtoBlob = (hasBlobConstructor || BlobBuilder) && window.atob &&
+	        window.ArrayBuffer && window.Uint8Array && function (dataURI) {
+	            var byteString,
+	                arrayBuffer,
+	                intArray,
+	                i,
+	                mimeString,
+	                bb;
+	            if (dataURI.split(',')[0].indexOf('base64') >= 0) {
+	                // Convert base64 to raw binary data held in a string:
+	                byteString = atob(dataURI.split(',')[1]);
+	            } else {
+	                // Convert base64/URLEncoded data component to raw binary data:
+	                byteString = decodeURIComponent(dataURI.split(',')[1]);
+	            }
+	            // Write the bytes of the string to an ArrayBuffer:
+	            arrayBuffer = new ArrayBuffer(byteString.length);
+	            intArray = new Uint8Array(arrayBuffer);
+	            for (i = 0; i < byteString.length; i += 1) {
+	                intArray[i] = byteString.charCodeAt(i);
+	            }
+	            // Separate out the mime component:
+	            mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+	            // Write the ArrayBuffer (or ArrayBufferView) to a blob:
+	            if (hasBlobConstructor) {
+	                return new Blob(
+	                    [hasArrayBufferViewSupport ? intArray : arrayBuffer],
+	                    {type: mimeString}
+	                );
+	            }
+	            bb = new BlobBuilder();
+	            bb.append(arrayBuffer);
+	            return bb.getBlob(mimeString);
+	        };
+	// if (window.HTMLCanvasElement && !CanvasPrototype.toBlob) {
+	//     if (CanvasPrototype.mozGetAsFile) {
+	//         CanvasPrototype.toBlob = function (callback, type, quality) {
+	//             if (quality && CanvasPrototype.toDataURL && dataURLtoBlob) {
+	//                 callback(dataURLtoBlob(this.toDataURL(type, quality)));
+	//             } else {
+	//                 callback(this.mozGetAsFile('blob', type));
+	//             }
+	//         };
+	//     } else if (CanvasPrototype.toDataURL && dataURLtoBlob) {
+	//         CanvasPrototype.toBlob = function (callback, type, quality) {
+	//             callback(dataURLtoBlob(this.toDataURL(type, quality)));
+	//         };
+	//     }
+	// }
+	return dataURLtoBlob(dataURLInput);	
+}
+
+},{}],3:[function(require,module,exports){
+/*
  * Javascript EXIF Reader 0.1.6
  * Copyright (c) 2008 Jacob Seidelin, jseidelin@nihilogic.dk, http://blog.nihilogic.dk/
  * Licensed under the MPL License [http://www.nihilogic.dk/licenses/mpl-license.txt]
@@ -752,20 +844,39 @@ var EXIF = module.exports = (function() {
 
 })();
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 var EXIF = require("./exif"),
-	BinaryFile = require("./binaryFile");
+	BinaryFile = require("./binaryFile"),
+	toBlob = require("./canvas-to-blob");
 
 
 module.exports = window.ImageMethods = {
 	
-	dataURItoBlob: function(dataURI) {
-	    var binary = atob(dataURI.split(',')[1]);
-	    var array = [];
-	    for(var i = 0; i < binary.length; i++) {
-	        array.push(binary.charCodeAt(i));
-	    }
-	    return new Blob([new Uint8Array(array)], {type: 'image/jpeg'});
+	xhrUpload: function(url, canvas, filename, fields, callback) {
+		
+		var blob = toBlob(canvas.toDataURL());
+
+		if(!callback) callback = function() {};
+
+		var formData = new FormData();
+
+		for(var i in fields)
+			formData.append(i, fields[i]);
+
+		formData.append("file", blob, filename);
+
+		var xhr = new XMLHttpRequest();
+		xhr.open('POST', url, true);
+		xhr.onload = function(e) {
+			callback();
+		};
+
+		xhr.onerror = function(e) {
+			callback(e);
+		};
+
+		xhr.send(formData);	
+		
 	},
 	
 	rotate: function(src_canvas, degrees) {
@@ -806,12 +917,12 @@ module.exports = window.ImageMethods = {
 		
 	},
 	
-	crop: function(canvas, selection) {
+	crop: function(canvas, x, y, w, h) {
 		var outputCanvas = document.createElement("canvas");
-	    outputCanvas.width = selection.w;
-	    outputCanvas.height = selection.h;
+	    outputCanvas.width = w;
+	    outputCanvas.height = h;
 		
-		var img = canvas.getContext("2d").getImageData(selection.x, selection.y, selection.w, selection.h);
+		var img = canvas.getContext("2d").getImageData(x, y, w, h);
 		
 		outputCanvas.getContext("2d").putImageData(img, 0, 0);
 		
@@ -879,7 +990,6 @@ module.exports = window.ImageMethods = {
 				data2[x2 + 3] = gx_a / weights_alpha;
 				}
 			}
-		console.log("hermite = "+(Math.round(Date.now() - time1)/1000)+" s");
 //			canvas.getContext("2d").clearRect(0, 0, Math.max(W, W2), Math.max(H, H2));
 
 		outputCanvas.getContext("2d").putImageData(img2, 0, 0);
@@ -918,7 +1028,7 @@ module.exports = window.ImageMethods = {
 		var readerBinary = new FileReader();
 		if(readerBinary.readAsBinaryString) {
 			readerBinary.readAsBinaryString(file);
-			readerBinary.onload = _.bind(function(evt) {
+			readerBinary.onload = function(evt) {
 				var b = new BinaryFile(evt.target.result);
 				exif = EXIF.readFromBinaryFile(b);
 			
@@ -936,7 +1046,7 @@ module.exports = window.ImageMethods = {
 			
 				readerCallback();
 			
-			}, this);
+			}.bind(this);
 		} else {
 			readerCallback();
 		}
@@ -956,4 +1066,4 @@ module.exports = window.ImageMethods = {
 	
 };
 
-},{"./binaryFile":1,"./exif":2}]},{},[3])
+},{"./binaryFile":1,"./canvas-to-blob":2,"./exif":3}]},{},[4])

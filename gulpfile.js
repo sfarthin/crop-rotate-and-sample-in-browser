@@ -22,6 +22,22 @@ gulp.task('browserify', function() {
         .pipe(gulp.dest('./example/www/js'));
 });
 
+gulp.task('build', function() {
+    return browserify('./src/methods.js')
+		
+		// Uglify code
+		// .transform({ global: true }, 'uglifyify')
+		
+		// Bundle code into stream
+        .bundle()
+		
+        // Pass desired output filename to vinyl-source-stream
+        .pipe(source('image-manipulation.js'))
+		
+        // Start piping stream to tasks!
+        .pipe(gulp.dest('./build'));
+});
+
 gulp.task('less', function () {
 	return gulp.src(['example/**/*.less', '!example/www/**'])
 		.pipe(less({
@@ -48,7 +64,5 @@ gulp.task('watch', function() {
 gulp.task('app', function() {
 	require("./example/app");
 });
-
-gulp.task('build', ['browserify', 'less', 'jade']);
 
 gulp.task('default', ['browserify', 'less', 'jade', 'app', 'watch']);
