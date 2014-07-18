@@ -1,0 +1,32 @@
+doctype html
+html(lang="en")
+	head
+		link(href="/style.css",rel="stylesheet",type="text/css")
+	body
+		.photo-editor(ng-controller="PhotoController")
+
+			.start(ng-show="!photoSelected && !loading")
+				h1 Choose a photo
+				.btn.btn-default.upload(ng-show="!photo") Upload
+					input(type="file",accept="image/*",onchange="photoSelection(this);",input-id="{{inputId}}")
+
+			.edit(ng-show="photoSelected && !uploaded && !loading")
+				h1 Move and resize the box to make your photo framed as desired
+
+				.cropWrapper
+				
+				.buttons
+					button.btn.btn-success(ng-click="rotateMore()") Rotate
+					button.btn.btn-primary(data-dismiss="modal",ng-click="acceptCrop()") Finish
+
+			.loading(ng-show="loading")
+				h1 Loading...
+
+			.finish(ng-show="photoSelected && uploaded && !loading")
+				h1 Portrait Uploaded!
+				img(src="{{photo}}")
+				p 
+					a(href="{{photo}}",target="_blank") {{photo}}
+
+	script(type="text/javascript",src="/bower_components/requirejs/require.js")
+	script(type="text/javascript",src="/js/index.js")

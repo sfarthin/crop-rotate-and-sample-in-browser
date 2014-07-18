@@ -1,0 +1,56 @@
+// LessHat mixins
+@import "lesshat.less";
+
+// Core variables and mixins
+@import "variables.less";
+@import "mixins.less";
+
+// Reset and dependencies
+@import "normalize.less";
+@import "print.less";
+@import "glyphicons.less";
+
+// Core CSS
+@import "scaffolding.less";
+@import "type.less";
+@import "code.less";
+@import "grid.less";
+@import "tables.less";
+@import "forms.less";
+@import "buttons.less";
+
+
+.photo-editor {
+	
+	text-align: center;
+	
+	.btn.upload {
+		margin: 50px;
+		
+		position: relative;
+		
+		input {
+		    position: absolute;
+		    top: 0;
+		    bottom: 0;
+		    left: 0;
+		    right: 0;
+		    opacity: 0.001;
+		}
+	}
+	
+	img {
+		margin: 40px;
+		border-radius: 5px;
+	}
+	
+	.jcrop-holder {
+		margin: 40px auto;
+	}
+	
+	.buttons {
+		.btn {
+			margin: 20px;
+		}
+	}
+}

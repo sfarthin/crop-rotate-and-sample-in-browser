@@ -1,7 +1,7 @@
 Image manipulation within the Browser
 =================================
 
-Example of rotating, cropping, and resizing image within browser
+Library for rotating, cropping, and resizing images within browser.
 
 
 Uploading to Google Cloud Storage
