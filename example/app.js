@@ -1,3 +1,8 @@
+/**
+*
+* Node.js Express App
+*
+**/
 var express = require('express'),
 	app  	= express(),
 	bodyParser = require('body-parser'),
@@ -5,7 +10,7 @@ var express = require('express'),
 	
 	portraits = [];
 	
-	config 	= require("./config"),
+	config 	= require("./gcs-config"),
 	gcs 	= require("gcs-signed-urls")(config.servicesEmail, config.storageBucket, config.privateKey);
 
 app.use(bodyParser.json());
@@ -21,7 +26,6 @@ app.use(express.static(__dirname + '/www'));
 
 // Allow the user to request permission to upload an image
 app.post("/upload", function(req, res, next) {
-	console.log(req.body);
 	res.send(CloudStorage.uploadRequest(req.body.filename, "portrait/"+Date.now()+"/"+req.body.filename));
 });
 

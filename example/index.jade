@@ -1,5 +1,5 @@
 doctype html
-html(lang="en")
+html(lang="en",ng-app="PhotoUploadApp")
 	head
 		link(href="/style.css",rel="stylesheet",type="text/css")
 	body
@@ -28,5 +28,4 @@ html(lang="en")
 				p 
 					a(href="{{photo}}",target="_blank") {{photo}}
 
-	script(type="text/javascript",src="/bower_components/requirejs/require.js")
-	script(type="text/javascript",src="/js/index.js")
+	script(type="text/javascript",src="/scripts.js")

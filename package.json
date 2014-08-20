@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-	"start": "node example/app.js"
+    "start": "node example/app.js"
   },
   "repository": {
     "type": "git",
@@ -18,6 +18,26 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/sfarthin/crop-rotate-and-sample-in-browser/issues"
+  },
+  "browserify": {
+    "transform": [ "browserify-shim" ]
+  },
+  "browser": {
+	  "jquery": "./bower_components/jquery/dist/jquery.js",
+	  "angular": "./bower_components/angular/angular.js",
+	  "jcrop": "./bower_components/jcrop/js/jquery.Jcrop.js"
+  },
+  "browserify-shim": {
+      "jquery": {
+          "exports": "$"
+      },
+	  "angular": {
+		  "exports": "angular"
+	  },
+      "jcrop": {
+          "exports": null,
+          "depends": [ "jquery:$" ]
+      }
   },
   "homepage": "https://github.com/sfarthin/crop-rotate-and-sample-in-browser",
   "dependencies": {
@@ -30,7 +50,8 @@
     "uglifyify": "^2.5.0",
     "gcs-signed-urls": "0.0.1",
     "jade": "^1.4.2",
-    "body-parser": "^1.4.3"
+    "body-parser": "^1.4.3",
+    "browserify-shim": "^3.6.0"
   },
   "devDependencies": {}
 }

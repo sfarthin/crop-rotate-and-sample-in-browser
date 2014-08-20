@@ -7,7 +7,7 @@ var browserify 	= require('browserify'),
 	path = require('path');
 
 gulp.task('browserify', function() {
-    return browserify('./src/methods.js')
+    return browserify('./example/scripts.js')
 		
 		// Uglify code
 		//.transform({ global: true }, 'uglifyify')
@@ -16,17 +16,17 @@ gulp.task('browserify', function() {
         .bundle()
 		
         // Pass desired output filename to vinyl-source-stream
-        .pipe(source('image-manipulation.js'))
+        .pipe(source('scripts.js'))
 		
         // Start piping stream to tasks!
-        .pipe(gulp.dest('./example/www/js'));
+        .pipe(gulp.dest('./example/www'));
 });
 
 gulp.task('build', function() {
     return browserify('./src/methods.js')
 		
 		// Uglify code
-		// .transform({ global: true }, 'uglifyify')
+		.transform({ global: true }, 'uglifyify')
 		
 		// Bundle code into stream
         .bundle()
@@ -35,15 +35,17 @@ gulp.task('build', function() {
         .pipe(source('image-manipulation.js'))
 		
         // Start piping stream to tasks!
-        .pipe(gulp.dest('./build'));
+        .pipe(gulp.dest('./bower-build'));
 });
 
 gulp.task('less', function () {
-	return gulp.src(['example/**/*.less', '!example/www/**'])
+	return gulp.src(['example/**/*.less', '!example/www/**', '!example/bower_components/**'])
 		.pipe(less({
 			paths: [ 
-				path.join(__dirname, 'example/www/bower_components/bootstrap/less'), 
-				path.join(__dirname, 'example/www/bower_components/lesshat/build') ]
+				path.join(__dirname, 'bower_components/bootstrap/less'), 
+				path.join(__dirname, 'bower_components/lesshat/build'),
+				path.join(__dirname, 'bower_components/jcrop/css') 
+			]
 		}))
 		.pipe(gulp.dest('example/www'));
 });

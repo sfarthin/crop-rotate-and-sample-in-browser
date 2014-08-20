@@ -1,1 +1,0 @@
-{appDir:".",baseUrl:"lib",dir:"../demo-build",paths:{jade:"../../jade"},pragmasOnSave:{excludeJade:!0},modules:[{name:"main"}]}
