@@ -5,3 +5,5 @@
 /example/gcs-config.js
 
 google-services-private-key.pem
+
+/test/.DS_Store

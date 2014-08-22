@@ -8,24 +8,15 @@ angular.module("PhotoUploadApp",[])
 
 	.controller("PhotoController", function($scope, $http) {
 	
-		/**
-		*
-		* File is selected from input element
-		*
-		**/
+		// This method is called when an input element changes using the hack below
 		$scope.selectFile = function(file) {
 	
-			/**
-			*
-			* Parse File and get img
-			*
-			**/
-			ImageMethods.parseFile(file, function(_canvas, _img, _rotate, _exif) {
+			// Lets get a canvas from the file and orientation according to EXIF data 
+			// and setup the interface for the user to crop
+			ImageMethods.getCanvasFromFile(file, function(canvas) {
 				$scope.$apply(function() {
-					$scope.canvas = _canvas;
-					$scope.img = _img;
-					$scope.rotate = _rotate;
-					$scope.exif = _exif;
+					$scope.canvas = canvas;
+					$scope.rotate = 0;
 					$scope.filename = file.name;
 		
 					$scope.photoSelected = true;
@@ -35,54 +26,95 @@ angular.module("PhotoUploadApp",[])
 			});
 		};
 	
-		// Handle File Input (hack)
+		// Handle File Input (hack)...
+		// By adding onchange="photoSelection(this);" we can ensure the input element 
+		// is bound even if it is replaced (see below)
 		window.photoSelection = function(input) {
 		
+			// Let angular know a file was selected
 			$scope.selectFile(input.files[0]);
 		
-			// This allows the change event to be triggered in the future
+			// By replacing the input element with an empty input element, we removed whatever file is selected.
+			// This allows the change event to be triggered in the future.
 			$(input).replaceWith( $(input).val('').clone( true ) );
 		};
 	
-		/**
-		*
-		* Allow user to rotate image
-		*
-		**/		
+		// This method allows users to rotate the canvas
 		$scope.rotateMore = function() {
-			$scope.rotate = ($scope.rotate + 90) % 360
+			// use modulus to limit values to 0,90,180,270
+			$scope.rotate = ($scope.rotate + 90) % 360;
+			
+			// Update jCrop if the user rotates the canvas
 			$scope.generateCropArea();
 		};
 	
-		/**
-		*
-		* When a user clicks Finish on crop dialog
-		*
-		**/
-		$scope.acceptCrop = function() {
+		// This method uploads our canvas to GCS as an image
+		$scope.xhrUpload = function(filename, canvas, fields, callback) {
+			var blob = ImageMethods.toBlob(canvas);
 
+			if(!callback) callback = function() {};
+
+			var formData = new FormData();
+
+			for(var i in fields)
+				formData.append(i, fields[i]);
+
+			formData.append("file", blob, filename);
+
+			var xhr = new XMLHttpRequest();
+			xhr.open('POST', "https://"+fields.bucket+".storage.googleapis.com/", true);
+			xhr.onload = function(e) {
+				$scope.$apply(function() {
+					callback();	
+				});
+			};
+
+			xhr.onerror = function(e) {
+				callback(e);
+			};
+
+			xhr.send(formData);
+		};
+	
+		// This is when a user clicks Finish on crop dialog
+		// It will do the final thumbnail generation and
+		// upload to GCS
+		$scope.acceptCrop = function() {
+			
+			// Lets show a loading screen
 			$scope.loading = true;
 
+			// Lets grab the selected area from jCrop
 			var selection = $scope.jcrop.tellSelect();
+			
+			console.log(selection);
 	
-			// Lets apply the filters
-		    var portraitCanvas = ImageMethods.rotate($scope.canvas, $scope.rotate);
-			portraitCanvas = ImageMethods.crop(portraitCanvas, selection.x, selection.y, selection.w, selection.h);
-		    portraitCanvas = ImageMethods.resize(portraitCanvas, 200, 240);
+			// Lets make our thumbnail
+			var portraitCanvas = (new ImageMethods($scope.canvas))
+				
+				// First rotate
+				.rotate($scope.rotate)
+				
+				// Then crop
+				.crop(selection.x, selection.y, selection.w, selection.h)
+				
+				// Lastly make our small thumbnail
+				.resize(200, 240)
+				
+				// Lets return the canvas
+				.canvas;
 
+			// Lets first ask permission from our node.js server to upload to GCS
 			$http.post("/upload", {
 				filename: $scope.filename
 			}).success(function(fields) {
 			
-				ImageMethods.xhrUpload("https://"+fields.bucket+".storage.googleapis.com/", portraitCanvas, $scope.filename, fields, function() {
-					$scope.$apply(function() {
-					
-						// Lets set our url
-						$scope.loading = false;
-						$scope.uploaded = true;
-						$scope.photo = "https://"+fields.bucket+".storage.googleapis.com/" + fields.key;
-					
-					});
+				// Lets use our helper method to upload to GCS
+				$scope.xhrUpload($scope.filename, portraitCanvas, fields, function() {
+					// Lets update our UI when the upload finishes
+					$scope.loading = false;
+					$scope.uploaded = true;
+					$scope.photo = "https://"+fields.bucket+".storage.googleapis.com/" + fields.key;
 				});
 			
 			}).error(function() {
@@ -93,82 +125,68 @@ angular.module("PhotoUploadApp",[])
 		}
 	
 		/**
-		*
-		* Create Thumbnail
-		*
+		* Create Thumbnail to match size of screen and allow user to crop a portrait
+		* TODO Resize Event Handler so photo fits screen upon resize.
 		**/
-		// TODO Resize Event Handler so photo matches modal
 		$scope.generateCropArea = function() {
 		
-			$scope.loading = true;
-
-			var MAX_HEIGHT = $(window).height() - 250;
-			console.log(MAX_HEIGHT);
-			//$scope.modal.find(".modal-body").css({"min-height": MAX_HEIGHT + 50});
-		
+			// Lets remove any exisiting jcrop interfaces
 			if($scope.jcrop) $scope.jcrop.destroy();
 		
-			// Create a thumb
-			var H = (MAX_HEIGHT < $scope.canvas.height ? MAX_HEIGHT : $scope.canvas.height),
-				W = Math.floor((H / $scope.canvas.height) * $scope.canvas.width);
+			// Lets Show the user a loading screen
+			$scope.loading = true;
 
-			var thumbnail;
-			if($scope.rotate) {
-				thumbnail = ImageMethods.rotate(ImageMethods.resize($scope.canvas, W, H), $scope.rotate);
-			} else {
-				thumbnail = ImageMethods.resize($scope.canvas, W, H);
-			}
+			// Lets get our working canvas and rotate it before continuing, Its rotation will affect the thumbnail size
+			var canvas = (new ImageMethods($scope.canvas)).rotate($scope.rotate).canvas,
+				
+				// Determine the max height our thumbnail can be to fit the user's screen
+				MAX_HEIGHT = $(window).height() - 250;
+		
+			// Determine the max size for our thumbnail
+			var H = (MAX_HEIGHT < canvas.height ? MAX_HEIGHT : canvas.height),
+				W = Math.floor((H / canvas.height) * canvas.width);
+			
+			// Resize our thumbnail
+			var thumbnail = ImageMethods.resize(canvas, W, H);
 
-			/**
-			*
-			* Start jCrop
-			*
-			**/
+			// We only accept photos at 5 / 6
 			var aspectRatio = 5 / 6, 
-				thumbnail_aspect_ratio = $scope.canvas.width / $scope.canvas.height, 
-				original_height, original_width, box_width, box_height;
+				thumbnail_aspect_ratio = canvas.width / canvas.height, 
+				box_width, box_height;
 	
-			//Rotate image if need be
-			if($scope.rotate == 90 || $scope.rotate == 270) {
-				original_height = $scope.img.width;
-				original_width  = $scope.img.height;
-			} else {
-				original_height = $scope.img.height;
-				original_width  = $scope.img.width;
-			}
-	
-			// calculate bounding box
+			// Lets make a 5/6 bounding box inside our image
+			// e.g. If photos is wider than 5/6 then the left and right sides will be chopped
 			if(thumbnail_aspect_ratio > aspectRatio) {
-				box_height = original_height;
+				box_height = canvas.height;
 				box_width  = box_height * aspectRatio; 
 			} else {
-				box_width = original_width;
+				box_width = canvas.width;
 				box_height = box_width * aspectRatio;
 			}
 		
+			// We are done stealing the UI
 			$scope.loading = false;
 
+			/**
+			* Setting up our jCrop stuff.
+			**/
+			// setTimeout hack for jCrop
 			setTimeout(function() {
-			
-		
+					
 				$(".cropWrapper").html("").append(thumbnail);
-
-				/**
-				*
-				* Setting up our cropping stuff.
-				*
-				**/
+				
 				$(thumbnail).Jcrop({
 					aspectRatio: aspectRatio,
 					minSize: [100, 120],
-					trueSize: [original_width, original_height],
+					trueSize: [canvas.width, canvas.height],
 					bgOpacity: 0.3,
-					// Lets place that largest bounding box in the middle of the submitted photo.
+
+					// This is where we define our 5/6 preselected bounding box.
 					setSelect: [
-						original_width/2  - box_width/2,
-						original_height/2 - box_height/2,
-						original_width/2  + box_width/2,
-						original_height/2 + box_height/2,
+						canvas.width/2  - box_width/2,
+						canvas.height/2 - box_height/2,
+						canvas.width/2  + box_width/2,
+						canvas.height/2 + box_height/2,
 					]
 		        }, function(){ 
 			        $scope.jcrop = this; 

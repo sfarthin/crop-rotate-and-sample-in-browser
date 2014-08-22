@@ -20,24 +20,28 @@
     "url": "https://github.com/sfarthin/crop-rotate-and-sample-in-browser/issues"
   },
   "browserify": {
-    "transform": [ "browserify-shim" ]
+    "transform": [
+      "browserify-shim"
+    ]
   },
   "browser": {
-	  "jquery": "./bower_components/jquery/dist/jquery.js",
-	  "angular": "./bower_components/angular/angular.js",
-	  "jcrop": "./bower_components/jcrop/js/jquery.Jcrop.js"
+    "jquery": "./bower_components/jquery/dist/jquery.js",
+    "angular": "./bower_components/angular/angular.js",
+    "jcrop": "./bower_components/jcrop/js/jquery.Jcrop.js"
   },
   "browserify-shim": {
-      "jquery": {
-          "exports": "$"
-      },
-	  "angular": {
-		  "exports": "angular"
-	  },
-      "jcrop": {
-          "exports": null,
-          "depends": [ "jquery:$" ]
-      }
+    "jquery": {
+      "exports": "$"
+    },
+    "angular": {
+      "exports": "angular"
+    },
+    "jcrop": {
+      "exports": null,
+      "depends": [
+        "jquery:$"
+      ]
+    }
   },
   "homepage": "https://github.com/sfarthin/crop-rotate-and-sample-in-browser",
   "dependencies": {
@@ -53,5 +57,14 @@
     "body-parser": "^1.4.3",
     "browserify-shim": "^3.6.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "karma-browserify": "^0.2.1",
+    "karma": "^0.12.22",
+    "karma-jasmine": "^0.2.2",
+    "karma-phantomjs-launcher": "^0.1.4",
+    "karma-chrome-launcher": "^0.1.4",
+    "resemblejs": "^1.1.2",
+    "lodash": "^2.4.1",
+    "async": "^0.9.0"
+  }
 }

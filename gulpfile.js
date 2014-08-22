@@ -8,34 +8,18 @@ var browserify 	= require('browserify'),
 
 gulp.task('browserify', function() {
     return browserify('./example/scripts.js')
-		
-		// Uglify code
-		//.transform({ global: true }, 'uglifyify')
-		
-		// Bundle code into stream
-        .bundle()
-		
-        // Pass desired output filename to vinyl-source-stream
+        .bundle({debug: true})
         .pipe(source('scripts.js'))
-		
-        // Start piping stream to tasks!
         .pipe(gulp.dest('./example/www'));
 });
 
+// This is for Bower only
 gulp.task('build', function() {
     return browserify('./src/methods.js')
-		
-		// Uglify code
 		.transform({ global: true }, 'uglifyify')
-		
-		// Bundle code into stream
         .bundle()
-		
-        // Pass desired output filename to vinyl-source-stream
         .pipe(source('image-manipulation.js'))
-		
-        // Start piping stream to tasks!
-        .pipe(gulp.dest('./bower-build'));
+        .pipe(gulp.dest('./build'));
 });
 
 gulp.task('less', function () {
@@ -56,15 +40,17 @@ gulp.task('jade', function() {
 		.pipe(gulp.dest('./example/www'))
 });
 
-// Watch Files For Changes
+// Watch file changes for our library and example app
 gulp.task('watch', function() {
 	gulp.watch(['example/index.jade'], ['jade']);
-	gulp.watch('example/**/*.less', ['less']);
-	gulp.watch('src/**/*', ['browserify']);
+	gulp.watch(['example/**/*.less'], ['less']);
+	gulp.watch(['src/**/*', 'example/**/*.js', '!example/www/**'], ['browserify']);
 });
 
+// Run our example app
 gulp.task('app', function() {
 	require("./example/app");
 });
 
+// Browsify for changes and watch for changes, and run our example app
 gulp.task('default', ['browserify', 'less', 'jade', 'app', 'watch']);

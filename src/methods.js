@@ -1,42 +1,23 @@
 var EXIF = require("./exif"),
 	BinaryFile = require("./binaryFile"),
-	toBlob = require("./canvas-to-blob");
+	toBlob = require("./canvas-to-blob"),
+	async = require("async"),
+	_ = require("lodash");
 
 
-module.exports = window.ImageMethods = {
-	
-	xhrUpload: function(url, canvas, filename, fields, callback) {
-		
-		var blob = toBlob(canvas.toDataURL());
-
-		if(!callback) callback = function() {};
-
-		var formData = new FormData();
-
-		for(var i in fields)
-			formData.append(i, fields[i]);
-
-		formData.append("file", blob, filename);
-
-		var xhr = new XMLHttpRequest();
-		xhr.open('POST', url, true);
-		xhr.onload = function(e) {
-			callback();
-		};
-
-		xhr.onerror = function(e) {
-			callback(e);
-		};
-
-		xhr.send(formData);	
-		
-	},
+var staticMethods = {
 	
 	rotate: function(src_canvas, degrees) {
+
+		// We only allow the canvas to be rotated by 90,180,270 so that it continues to be a rectangle.
+		if(degrees % 90 != 0) {
+			throw "Rotate by 90, 180, 270 degrees only";
+		}
 		
 		var canvas = document.createElement("canvas"),
 			context = canvas.getContext("2d");
-			
+		
+		// If image is rotate by 90 or 270, the canvas width and height will reverse.
 		if(degrees == 90 || degrees == 270) {
 			canvas.width = src_canvas.height;
 			canvas.height = src_canvas.width;
@@ -47,6 +28,7 @@ module.exports = window.ImageMethods = {
 
 	    // save the unrotated context of the canvas so we can restore it later
 	    // the alternative is to untranslate & unrotate after drawing
+		// The translate method could potentially affect other methods if not.
 	    context.save();
 
 	    // move to the center of the canvas
@@ -56,15 +38,17 @@ module.exports = window.ImageMethods = {
 			context.translate(src_canvas.width/2,src_canvas.height/2);
 			
 
-	    // rotate the canvas to the specified degrees
-	    context.rotate(degrees*Math.PI/180);
+	    // rotate the canvas using radians, so we convert degrees to radians
+		// degrees/360 = radians/(2*PI) so...
+		// radians = degrees * PI/180
+	    context.rotate(degrees * Math.PI/180 );
 
 	    // draw the image
 	    // since the context is rotated, the image will be rotated also
 		context.drawImage(src_canvas,-src_canvas.width/2,-src_canvas.height/2);
 
 	    // we’re done with the rotating so restore the unrotated context
-	    context.restore();	
+	    context.restore();
 		
 		return canvas;
 		
@@ -74,20 +58,28 @@ module.exports = window.ImageMethods = {
 		var outputCanvas = document.createElement("canvas");
 	    outputCanvas.width = w;
 	    outputCanvas.height = h;
-		
+		console.log(arguments);
 		var img = canvas.getContext("2d").getImageData(x, y, w, h);
 		
+		// Cropping is straightforward copy of a portion of the image data.
 		outputCanvas.getContext("2d").putImageData(img, 0, 0);
 		
 		return outputCanvas;
 		
 	},
-	
-	// http://stackoverflow.com/questions/18922880/html5-canvas-resize-downscale-image-high-quality/19223362#19223362
+
+	/**
+	* NOTE: the resize method is not my own, but taken from stackoverflow
+	* http://stackoverflow.com/questions/18922880/html5-canvas-resize-downscale-image-high-quality/19223362#19223362
+	**/
 	resize: function(canvas, W2, H2) {
 		
 		var W = canvas.width,
 			H = canvas.height;
+		
+		// if no height/width is given lets jsut make it proportional
+		if(!H2) H2 =  Math.floor((W2 / W) * H)
+		if(!W2) W2 =  Math.floor((H2 / H) * W)
 		
 		var outputCanvas = document.createElement("canvas");
 	    outputCanvas.width = W2;
@@ -143,78 +135,146 @@ module.exports = window.ImageMethods = {
 				data2[x2 + 3] = gx_a / weights_alpha;
 				}
 			}
-//			canvas.getContext("2d").clearRect(0, 0, Math.max(W, W2), Math.max(H, H2));
 
 		outputCanvas.getContext("2d").putImageData(img2, 0, 0);
 		return outputCanvas;
 
 	},
 	
-	parseFile: function(file, fn) {
-		if(!fn) fn = function() {};
+	/**
+	*
+	* Non-chainable methods below
+	*
+	**/
+	
+	// Convert our canvas to a blob so it can be transferred or reread
+	toBlob: function(canvas) {
+		return toBlob(canvas.toDataURL());
+	},
+	
+	// This method determines if an image should be rotated based on EXIF meta data
+	getOrientationFromFile: function(file, callback) {
 		
-		var exif,rotate,img,canvas, num_callbacks = 0;
-		
-		// After we read
-		var readerCallback = function() {
-			
-			num_callbacks++;
-			
-			if(num_callbacks < 2) return;
-
-			var canvas = document.createElement("canvas"),
-				ctx = canvas.getContext("2d");
-		
-		    canvas.width = img.width;
-		    canvas.height = img.height;
-		    ctx.drawImage(img, 0, 0); //draw image
-			
-			fn(canvas, img, rotate, exif);
-			
-		};
-		
-		// Lets read this file so we can throw it in a image tag
 		var reader = new FileReader();
-		reader.readAsDataURL(file);
+
+		reader.readAsBinaryString(file);
 		
-		// Lets read this file so we can read the EXIF information
-		var readerBinary = new FileReader();
-		if(readerBinary.readAsBinaryString) {
-			readerBinary.readAsBinaryString(file);
-			readerBinary.onload = function(evt) {
-				var b = new BinaryFile(evt.target.result);
+		reader.onload = function(evt) {
+			var rotate,
+				
+				// Use our third party libraries to read EXIF data
+				b = new BinaryFile(evt.target.result),
 				exif = EXIF.readFromBinaryFile(b);
-			
-				// http://www.daveperrett.com/articles/2012/07/28/exif-orientation-handling-is-a-ghetto/
-				// Lets handle the orientation tag, but lets ignore the horizontal/vertical flipping.
-				if(exif.Orientation == 7 || exif.Orientation == 8) {
-					rotate = 270;
-				} else if(exif.Orientation == 3 || exif.Orientation == 4) {
-					rotate = 180;
-				} else if(exif.Orientation == 6 || exif.Orientation == 5) {
-					rotate = 90;
-				} else {
-					rotate = 0;
-				}
-			
-				readerCallback();
-			
-			}.bind(this);
-		} else {
-			readerCallback();
+		
+			// Inspired by http://www.daveperrett.com/articles/2012/07/28/exif-orientation-handling-is-a-ghetto/
+			// Lets handle the orientation tag, but lets ignore the horizontal/vertical flipping.
+			if(exif.Orientation == 7 || exif.Orientation == 8) {
+				rotate = 270;
+			} else if(exif.Orientation == 3 || exif.Orientation == 4) {
+				rotate = 180;
+			} else if(exif.Orientation == 6 || exif.Orientation == 5) {
+				rotate = 90;
+			} else {
+				rotate = 0;
+			}
+		
+			callback(rotate);
+		
 		}
 
-        reader.onload = function(e) {
-			
-			img = document.createElement("img");
-			img.onload = function() { 
-				
-				readerCallback();
-			};
-			img.src = e.target.result;
-			
+		
+	},
+	
+	// Paints an image onto a new canvas
+	getCanvasFromImage: function(img) {
+		var canvas = document.createElement("canvas");
+	    canvas.width = img.width;
+	    canvas.height = img.height;
+	    canvas.getContext("2d").drawImage(img, 0, 0);
+		
+		return canvas;
+	},
+	
+	// Uses xhr to pull a BLOB form a url and gets file and orientation from it
+	getCanvasFromUrl: function(url, callback) {
+		var xhr = new XMLHttpRequest();
+		xhr.open('GET', url, true);
+		xhr.responseType = 'blob';
+
+		xhr.onload = function(e) {
+			staticMethods.getCanvasFromFile(xhr.response, callback);
 		};
+
+		xhr.send();
+	},
+	
+	// Gets the orientation and canvas from a image BLOB
+	getCanvasFromFile: function(file, fn) {
+		if(!fn) fn = function() {};
+		
+		async.parallel([
+		    function(callback) { staticMethods.getOrientationFromFile(file, function(rotate) { callback(null, rotate) }); },
+		    function(callback) { 
+				
+				// Lets convert File to an Image first
+				var reader = new FileReader();
+				reader.readAsDataURL(file);
+				reader.onload = function(e) {
+					var img = document.createElement("img");
+					img.onload = function() { 
+						callback(null, staticMethods.getCanvasFromImage(img));
+					};
+					img.src = e.target.result;					
+				}
+
+			}
+		],
+		function(err, results){
+			var rotate = results[0],
+				canvas = results[1];
+			
+			if(rotate)
+				canvas = staticMethods.rotate(canvas, rotate);
+			
+			
+			fn(canvas, file);
+		});
 		
 	}
 	
 };
+
+/**
+* Lets make it chainable
+**/
+function ImageMethodConstructor(canvas) {
+	this.canvas = canvas;
+	
+	this.height = function() {
+		return this.canvas.height;
+	}
+	this.width = function() {
+		return this.canvas.width;
+	}
+	
+	return this;
+}
+
+// Make our static methods Chainable
+delete ImageMethodConstructor.prototype.getCanvasFromUrl;
+_.each(staticMethods, function(func, key) {
+	ImageMethodConstructor.prototype[key] = function() {
+		this.canvas = func.apply(this, [this.canvas].concat(_.values(arguments)));
+		return this;
+	};
+});
+
+// Lets overwrite these non chainable methods
+ImageMethodConstructor.prototype.toBlob = function() {
+	return staticMethods.toBlob.apply(this, _.union([this.canvas], arguments));
+};
+
+// TODO Lets add a wrapper for Camanjs (http://camanjs.com/) methods.
+
+
+module.exports = window.ImageMethods = _.extend(ImageMethodConstructor, staticMethods);
