@@ -2,7 +2,7 @@
 
 This library
 
-### Install
+## Install
 The library is available on bower and npm.
 
     bower install image-manipulation
@@ -12,18 +12,18 @@ OR
     npm install image-manipulation
 
 
-### Features
+## Features
 
-- Use hermite sampling to resize image for better quality than drawImage. See [this stackoverflow](http://stackoverflow.com/questions/18922880/html5-canvas-resize-downscale-image-high-quality/19223362#19223362). Even modern libraries use the drawImage method which results in bad quality
-- Parses EXIF to always provide the correct orientation. See [this article](http://www.daveperrett.com/articles/2012/07/28/exif-orientation-handling-is-a-ghetto/).
-- Ability to upload directly to Google Cloud Storage with [Signed URLs](https://developers.google.com/storage/docs/accesscontrol#Signed-URLs) using the [gcs-signed-urls](https://github.com/sfarthin/nodejs-google-cloud-storage) NPM module.
+- Hermite sampling is used to resize images rather than drawImage. This results in a much better quality photo after resize. See [this stackoverflow](http://stackoverflow.com/questions/18922880/html5-canvas-resize-downscale-image-high-quality/19223362#19223362).
+- The library parses EXIF meta data to always provide the correct orientation. Photos taken with older cameras rely on EXIF meta data. See [this article](http://www.daveperrett.com/articles/2012/07/28/exif-orientation-handling-is-a-ghetto/).
+- Ability to upload directly to Google Cloud Storage with [Signed URLs](https://developers.google.com/storage/docs/accesscontrol#Signed-URLs) using my [gcs-signed-urls](https://github.com/sfarthin/nodejs-google-cloud-storage) NPM module. See full example.
 
 
-### Examples
+## Examples
 
-##### Manipulators
+#### Manipulators
 
-A canvas can be changed using the manipulator methods: rotate, resize and crop. These methods can be used staticly to produce a new canvas element.
+A canvas can be changed using the manipulator methods: **rotate**, **resize** and **crop**. One can use the static methods.
 
 	var canvas = document.querySelector("canvas");
 	
@@ -33,7 +33,7 @@ A canvas can be changed using the manipulator methods: rotate, resize and crop. 
 	
 	document.body.append(rotatedCanvas);
 
-One can also make a manipulator instance and chain these methods.
+or one can also make a manipulator instance and chain these methods.
 
 	var canvas = document.querySelector("canvas");
 	
@@ -43,14 +43,16 @@ One can also make a manipulator instance and chain these methods.
 	
 	document.body.append(manipulator.canvas);
 
-##### Retrieving images to manipulate
+#### Retrieving images to manipulate
 
 Grab an image from the DOM and flip it upside down
 
 	var img = document.querySelector("img"),
 		canvas = ImageMethods.getCanvasFromImage(img);
 	
-	img.src = ImageMethods.rotate(canvas, 180).toDataUrl();
+	img.src = ImageMethods.rotate(canvas, 180).toDataURL();
+
+
 
 Grab an image from an input element (<input type="file" accept="image/*">), create a thumbnail at 200px width and add it to the screen.
 
@@ -67,14 +69,16 @@ Grab an image from an input element (<input type="file" accept="image/*">), crea
 		});
 	};
 
+
+
 Download an image from the server, cut it into 2 pieces, and upload the pieces back to the server via xhr2
 
 	ImageMethods.getCanvasFromUrl("/path/to/image.jpg", function(canvas, file) {
 		
 		var manipulator = new ImageMethods(canvas);
 		
-		var piece1Canvas = ImageMethods.crop(0,0,canvas.width/2,canvas.height),
-			piece2Canvas = ImageMethods.crop(canvas.width/2,0,canvas.width/2,canvas.height),
+		var piece1Canvas = ImageMethods.crop(0, 0, canvas.width/2, canvas.height),
+			piece2Canvas = ImageMethods.crop(canvas.width/2, 0, canvas.width/2, canvas.height),
 		
 		// Put together FormData for submission
 		var formData = new FormData();
@@ -87,20 +91,23 @@ Download an image from the server, cut it into 2 pieces, and upload the pieces b
 		
 	});
 
-##### Full Example
+### Full Example
 
 This example allows 
 
 See Demo: [http://floating-spire-3371.herokuapp.com/](http://floating-spire-3371.herokuapp.com/)
 
-### Reference
+## Reference
 
-###xhrUpload(uploadUrl, canvasElement, filename, formFields, callback)
-###rotate(src_canvas, degrees)
-###crop(canvas, x, y, width, height)
-###resize(canvas, width, height)
+### Chainable instance methods
 
-### parseFile(file, callback)
-This method parses an image from a file input element. It returns the canvas element, image, the current rotation of the image given the EXIF data. The callback is called likeso:
-  
-  callback(canvas, img, rotate, exif)
+##### rotate(degrees)
+##### crop(x, y, width, height)
+##### resize(width, height)
+
+### Static methods
+
+##### getOrientationFromFile(file, callback)
+##### getCanvasFromImage(img)
+##### getCanvasFromUrl(url, callback)
+##### getCanvasFromFile(file, callback)
