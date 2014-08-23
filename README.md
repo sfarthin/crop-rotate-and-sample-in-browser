@@ -104,13 +104,28 @@ See Demo: [http://floating-spire-3371.herokuapp.com/](http://floating-spire-3371
 
 ### Chainable instance methods
 
+	// Create an manipulator instance likeso:
+	var instance = new ImageMethods(canvas)
+	
+	// The canvas element can be exposed
+	instance.canvas
+	
+	// You can convert your instance into a blob 
+	var blob = instance.toBlob();
+
+
 ##### rotate(degrees)
 ##### crop(x, y, width, height)
 ##### resize(width, height)
 
 ### Static methods
+These methods follow this form except *getCanvasFromImage* which simply returns a canvas element.
 
-##### getOrientationFromFile(file, callback)
+	ImageMethods.getOrientationFromFile(file, function(canvas) {
+		// Get access to the canvas element here
+	});
+	
 ##### getCanvasFromImage(img)
+##### getOrientationFromFile(file, callback)
 ##### getCanvasFromUrl(url, callback)
 ##### getCanvasFromFile(file, callback)
