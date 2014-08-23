@@ -1,6 +1,15 @@
-# Image Methods
+# Image Manipulation Methods
 
-This library
+This library exposes a simple API for retrieving, sending, and manipulating images in the browser. 
+
+Simple actions such as cropping or creating thumbnails can easilly be done within the browser rather than adding extra stress on a server. The full example demonstrates how an app can accept an image, allow the user to crop the image, and upload a scaled down thumbnail directly to Google Cloud Storage using the  [gcs-signed-urls](https://github.com/sfarthin/nodejs-google-cloud-storage) NPM module.
+
+## Features
+
+- Hermite sampling is used to resize images rather than drawImage. This results in a much better quality photo after resize. See [this stackoverflow](http://stackoverflow.com/questions/18922880/html5-canvas-resize-downscale-image-high-quality/19223362#19223362).
+- The library parses EXIF meta data to always provide the correct orientation. Photos taken with older cameras rely on EXIF meta data. See [this article](http://www.daveperrett.com/articles/2012/07/28/exif-orientation-handling-is-a-ghetto/).
+- Ability to upload directly to Google Cloud Storage with [Signed URLs](https://developers.google.com/storage/docs/accesscontrol#Signed-URLs) using my [gcs-signed-urls](https://github.com/sfarthin/nodejs-google-cloud-storage) NPM module. See full example.
+
 
 ## Install
 The library is available on bower and npm.
@@ -11,13 +20,7 @@ OR
 
     npm install image-manipulation
 
-
-## Features
-
-- Hermite sampling is used to resize images rather than drawImage. This results in a much better quality photo after resize. See [this stackoverflow](http://stackoverflow.com/questions/18922880/html5-canvas-resize-downscale-image-high-quality/19223362#19223362).
-- The library parses EXIF meta data to always provide the correct orientation. Photos taken with older cameras rely on EXIF meta data. See [this article](http://www.daveperrett.com/articles/2012/07/28/exif-orientation-handling-is-a-ghetto/).
-- Ability to upload directly to Google Cloud Storage with [Signed URLs](https://developers.google.com/storage/docs/accesscontrol#Signed-URLs) using my [gcs-signed-urls](https://github.com/sfarthin/nodejs-google-cloud-storage) NPM module. See full example.
-
+You can access via "window.ImageMethods"
 
 ## Examples
 
@@ -39,7 +42,7 @@ or one can also make a manipulator instance and chain these methods.
 	
 	var manipulator = new ImageMethods(canvas);
 	
-	manipulator.resize(canvas, 100, 100).rotate(90);
+	manipulator.resize(100, 100).rotate(90);
 	
 	document.body.append(manipulator.canvas);
 
