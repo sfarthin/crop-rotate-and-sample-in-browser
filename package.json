@@ -7,7 +7,7 @@
     "example": "example"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "./node_modules/karma/bin/karma start",
     "start": "node example/app.js"
   },
   "repository": {
@@ -43,6 +43,25 @@
       ]
     }
   },
+  "testling": {
+    "files": "./testling-ci.js",
+	"scripts": [
+	    "./node_modules/jasmine-reporters/lib/jasmine-2.0.0/jasmine.js",
+		"./node_modules/jasmine-reporters/lib/jasmine-2.0.0/jasmine-html.js",
+		"./node_modules/jasmine-reporters/src/tap_reporter.js",
+	    "./node_modules/jasmine-reporters/lib/jasmine-2.0.0/boot.js"
+	],
+    "browsers": [
+      "ie/10..latest",
+      "chrome/22..latest",
+      "firefox/22..latest",
+      "safari/6..latest",
+      "opera/11.0..latest",
+      "iphone/7",
+      "ipad/7",
+      "android-browser/latest"
+    ]
+  },
   "homepage": "https://github.com/sfarthin/crop-rotate-and-sample-in-browser",
   "dependencies": {
     "express": "^4.6.1",
@@ -65,6 +84,7 @@
     "karma-jasmine": "^0.2.2",
     "karma-phantomjs-launcher": "^0.1.4",
     "karma-chrome-launcher": "^0.1.4",
-    "resemblejs": "^1.1.2"
+    "resemblejs": "^1.1.2",
+    "jasmine-reporters": "^2.0.3"
   }
 }
