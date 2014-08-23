@@ -161,7 +161,7 @@ angular.module("PhotoUploadApp",[])
 				box_width  = box_height * aspectRatio; 
 			} else {
 				box_width = canvas.width;
-				box_height = box_width * aspectRatio;
+				box_height = box_width * (1/aspectRatio);
 			}
 		
 			// We are done stealing the UI

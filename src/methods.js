@@ -55,10 +55,15 @@ var staticMethods = {
 	},
 	
 	crop: function(canvas, x, y, w, h) {
+		
+		if(w == 0 && h == 0) {
+			return canvas;
+		}
+		
 		var outputCanvas = document.createElement("canvas");
 	    outputCanvas.width = w;
 	    outputCanvas.height = h;
-		console.log(arguments);
+
 		var img = canvas.getContext("2d").getImageData(x, y, w, h);
 		
 		// Cropping is straightforward copy of a portion of the image data.
@@ -249,14 +254,6 @@ var staticMethods = {
 **/
 function ImageMethodConstructor(canvas) {
 	this.canvas = canvas;
-	
-	this.height = function() {
-		return this.canvas.height;
-	}
-	this.width = function() {
-		return this.canvas.width;
-	}
-	
 	return this;
 }
 
