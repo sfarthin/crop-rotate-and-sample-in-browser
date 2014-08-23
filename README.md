@@ -57,7 +57,7 @@ Grab an image from the DOM and flip it upside down
 
 
 
-Grab an image from an input element (*&lt;input type="file" accept="image/*"&gt;*), create a thumbnail at 200px width and add it to the screen.
+Grab an image from an input element (*&lt;input type="file" accept="image/&#42;"&gt;*), create a thumbnail at 200px width and add it to the screen.
 
 	document.querySelector("input[type=file]").onchange = function(e) {
 		ImageMethods.getCanvasFromFile(e.files[0], function(canvas) {
