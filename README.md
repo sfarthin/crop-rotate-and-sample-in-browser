@@ -131,3 +131,31 @@ You can run unit tests with Karma
 	
 	npm install
 	karma start
+
+## Running the demo
+
+Setup a google cloud storage with a service account as explained on the [gcs-signed-urls page](https://github.com/sfarthin/nodejs-google-cloud-storage). 
+
+Drop your private key in the example directory.
+
+Create *gcs-config.js* in the example directory with your Google Cloud Storage information like below
+
+	module.exports = {
+	    "storageBucket":    "storage-bucket",
+	    "servicesEmail":    "your-services-email@developer.gserviceaccount.com",
+	    "privateKey":       __dirname +"/google-services-private-key.pem"
+	};
+
+Now you can run the app by running...
+
+	node example/app.js
+	
+The example will be visible on http://localhost:3001/
+
+#### Pushing to Heroku
+
+Remove "gcs-config.js" and "google-services-private-key.pem" from .gitignore
+
+	git commit -a
+	heroku create
+	git push heroku master
