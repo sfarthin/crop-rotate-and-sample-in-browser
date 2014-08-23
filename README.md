@@ -124,3 +124,10 @@ These methods follow this form except *getCanvasFromImage* which simply returns 
 ##### getOrientationFromFile(file, callback)
 ##### getCanvasFromUrl(url, callback)
 ##### getCanvasFromFile(file, callback)
+
+## Testing
+
+You can run unit tests with Karma
+	
+	npm install
+	karma start
