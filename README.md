@@ -2,9 +2,9 @@
 
 This library exposes a simple API for retrieving, sending, and manipulating images in the browser. 
 
-The [demo](http://floating-spire-3371.herokuapp.com/) allows the user to select a photo from his or her computer, crop and rotate the image, and upload directly to Google Cloud Storage using the  [gcs-signed-urls](https://github.com/sfarthin/nodejs-google-cloud-storage) NPM module.
+The demo allows the visitor to select a photo from his or her computer, crop and rotate the image, and upload directly to Google Cloud Storage using the [gcs-signed-urls](https://github.com/sfarthin/nodejs-google-cloud-storage) module to handle permissions.
 
-See demo: [http://floating-spire-3371.herokuapp.com/](http://floating-spire-3371.herokuapp.com/)
+See demo: [http://blooming-bastion-8931.herokuapp.com/](http://blooming-bastion-8931.herokuapp.com/)
 
 ## Features
 
