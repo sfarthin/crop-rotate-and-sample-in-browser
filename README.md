@@ -8,7 +8,6 @@ Simple actions such as cropping or creating thumbnails can easilly be done withi
 
 - Hermite sampling is used to resize images rather than drawImage. This results in a much better quality photo after resize. See [this stackoverflow](http://stackoverflow.com/questions/18922880/html5-canvas-resize-downscale-image-high-quality/19223362#19223362).
 - The library parses EXIF meta data to always provide the correct orientation. Photos taken with older cameras rely on EXIF meta data. See [this article](http://www.daveperrett.com/articles/2012/07/28/exif-orientation-handling-is-a-ghetto/).
-- Ability to upload directly to Google Cloud Storage with [Signed URLs](https://developers.google.com/storage/docs/accesscontrol#Signed-URLs) using my [gcs-signed-urls](https://github.com/sfarthin/nodejs-google-cloud-storage) NPM module. See full example.
 
 
 ## Install
