@@ -145,6 +145,28 @@ Testling integration can be tested likeso:
 
 NOTE: ci.testling.com integration was setup, but testling has had ongoing issues timing out [service timeout issues](https://github.com/substack/testling/issues/88)
 
+
+##### Protractor/WebdriverJS end-to-end test of the demo in Chrome
+
+First run the app (requires you to [setup Google Cloud Storage](https://github.com/sfarthin/crop-rotate-and-sample-in-browser#running-the-demo)).
+
+	node example/app
+
+No need to start a standalone selenium server, protractor uses the chromedriver installed via npm. Simply:
+
+	protractor
+
+This process also creates these screenshots automatically:
+* * *
+![](https://raw.githubusercontent.com/sfarthin/crop-rotate-and-sample-in-browser/master/screenshots/1-upload-screen.jpg)
+* * *
+![](https://raw.githubusercontent.com/sfarthin/crop-rotate-and-sample-in-browser/master/screenshots/2-edit-screen.jpg)
+* * *
+![](https://raw.githubusercontent.com/sfarthin/crop-rotate-and-sample-in-browser/master/screenshots/3-loading-screen.jpg)
+* * *
+![](https://raw.githubusercontent.com/sfarthin/crop-rotate-and-sample-in-browser/master/screenshots/4-finish-screen.jpg)
+* * *
+
 ## Running the demo
 
 Setup a google cloud storage with a service account as explained on the [gcs-signed-urls page](https://github.com/sfarthin/nodejs-google-cloud-storage). 
@@ -164,16 +186,6 @@ Now you can run the app by running...
 	node example/app.js
 	
 The example will be visible on http://localhost:3001/
-
-##### Protractor/WebdriverJS end-to-end test of the demo in Chrome
-
-First run the app
-
-	node example/app
-
-No need to start a standalone selenium server, protractor uses the chromedriver installed via npm. Simply:
-
-	protractor
 
 ##### Pushing to Heroku
 
