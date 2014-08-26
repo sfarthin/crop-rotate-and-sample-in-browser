@@ -157,11 +157,15 @@ No need to start a standalone selenium server, protractor uses the chromedriver 
 	protractor
 
 This process also creates these screenshots automatically:
-
+* * *
 ![](https://raw.githubusercontent.com/sfarthin/crop-rotate-and-sample-in-browser/master/screenshots/1-upload-screen.jpg)
+* * *
 ![](https://raw.githubusercontent.com/sfarthin/crop-rotate-and-sample-in-browser/master/screenshots/2-edit-screen.jpg)
+* * *
 ![](https://raw.githubusercontent.com/sfarthin/crop-rotate-and-sample-in-browser/master/screenshots/3-loading-screen.jpg)
+* * *
 ![](https://raw.githubusercontent.com/sfarthin/crop-rotate-and-sample-in-browser/master/screenshots/4-finish-screen.jpg)
+* * *
 
 ## Running the demo
 
