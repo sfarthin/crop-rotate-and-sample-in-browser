@@ -148,7 +148,7 @@ NOTE: ci.testling.com integration was setup, but testling has had ongoing issues
 
 ##### Protractor/WebdriverJS end-to-end test of the demo in Chrome
 
-First run the app (requires you to setup Google Cloud Storage, see below).
+First run the app (requires you to [setup Google Cloud Storage](https://github.com/sfarthin/crop-rotate-and-sample-in-browser#running-the-demo)).
 
 	node example/app
 
