@@ -127,7 +127,7 @@ These methods follow this form except *getCanvasFromImage* which simply returns 
 
 ## Testing
 
-Karma/Jasmine is used for unit tests.
+Karma/Jasmine is used for [unit tests](https://github.com/sfarthin/crop-rotate-and-sample-in-browser/blob/master/test/methods.spec.js).
 
 	npm install
 	karma start
