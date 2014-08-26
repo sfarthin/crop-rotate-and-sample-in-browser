@@ -86,7 +86,6 @@
     "karma-chrome-launcher": "^0.1.4",
     "resemblejs": "^1.1.2",
     "jasmine-reporters": "^2.0.3",
-    "selenium": "^2.20.0",
     "chromedriver": "^2.10.0-1"
   }
 }
