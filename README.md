@@ -127,8 +127,8 @@ These methods follow this form except *getCanvasFromImage* which simply returns 
 
 ## Testing
 
-You can run unit tests with Karma
-	
+Karma/Jasmine is used for unit tests.
+
 	npm install
 	karma start
 
