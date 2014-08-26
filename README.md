@@ -143,6 +143,8 @@ Testling integration can be tested likeso:
 	testling -u
 	// A localhost Url will be given to run tests. Simply paste it in the browser
 
+NOTE: ci.testling.com integration was setup, but testling has had ongoing issues timing out [service timeout issues](https://github.com/substack/testling/issues/88)
+
 ## Running the demo
 
 Setup a google cloud storage with a service account as explained on the [gcs-signed-urls page](https://github.com/sfarthin/nodejs-google-cloud-storage). 
@@ -163,7 +165,17 @@ Now you can run the app by running...
 	
 The example will be visible on http://localhost:3001/
 
-#### Pushing to Heroku
+##### Protractor/WebdriverJS end-to-end test of the demo in Chrome
+
+First run the app
+
+	node example/app
+
+No need to start a standalone selenium server, protractor uses the chromedriver installed via npm. Simply:
+
+	protractor
+
+##### Pushing to Heroku
 
 Remove "gcs-config.js" and "google-services-private-key.pem" from .gitignore
 

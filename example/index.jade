@@ -5,12 +5,12 @@ html(lang="en",ng-app="PhotoUploadApp")
 	body
 		.photo-editor(ng-controller="PhotoController")
 
-			.start(ng-show="!photoSelected && !loading")
+			.start(ng-if="!photoSelected && !loading")
 				h1 Choose a photo
 				.btn.btn-default.upload(ng-show="!photo") Upload
 					input(type="file",accept="image/*",onchange="photoSelection(this);",input-id="{{inputId}}")
 
-			.edit(ng-show="photoSelected && !uploaded && !loading")
+			.edit(ng-if="photoSelected && !uploaded && !loading")
 				h1 Move and resize the box to make your photo framed as desired
 
 				.cropWrapper
@@ -19,10 +19,10 @@ html(lang="en",ng-app="PhotoUploadApp")
 					button.btn.btn-success(ng-click="rotateMore()") Rotate
 					button.btn.btn-primary(data-dismiss="modal",ng-click="acceptCrop()") Finish
 
-			.loading(ng-show="loading")
+			.loading(ng-if="loading")
 				h1 Loading...
 
-			.finish(ng-show="photoSelected && uploaded && !loading")
+			.finish(ng-if="photoSelected && uploaded && !loading")
 				h1 Portrait Uploaded!
 				img(src="{{photo}}")
 				p 

@@ -45,12 +45,12 @@
   },
   "testling": {
     "files": "./testling-ci.js",
-	"scripts": [
-	    "./node_modules/jasmine-reporters/lib/jasmine-2.0.0/jasmine.js",
-		"./node_modules/jasmine-reporters/lib/jasmine-2.0.0/jasmine-html.js",
-		"./node_modules/jasmine-reporters/src/tap_reporter.js",
-	    "./node_modules/jasmine-reporters/lib/jasmine-2.0.0/boot.js"
-	],
+    "scripts": [
+      "./node_modules/jasmine-reporters/lib/jasmine-2.0.0/jasmine.js",
+      "./node_modules/jasmine-reporters/lib/jasmine-2.0.0/jasmine-html.js",
+      "./node_modules/jasmine-reporters/src/tap_reporter.js",
+      "./node_modules/jasmine-reporters/lib/jasmine-2.0.0/boot.js"
+    ],
     "browsers": [
       "ie/10..latest",
       "chrome/22..latest",
@@ -85,6 +85,8 @@
     "karma-phantomjs-launcher": "^0.1.4",
     "karma-chrome-launcher": "^0.1.4",
     "resemblejs": "^1.1.2",
-    "jasmine-reporters": "^2.0.3"
+    "jasmine-reporters": "^2.0.3",
+    "selenium": "^2.20.0",
+    "chromedriver": "^2.10.0-1"
   }
 }
