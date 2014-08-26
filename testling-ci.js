@@ -1,6 +1,6 @@
 /**
 *
-* Adapter for Testling-ci
+* Adapter for Testling-ci 
 *
 **/
 jasmine.getEnv().addReporter(new jasmineReporters.TapReporter());
