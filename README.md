@@ -143,8 +143,6 @@ Testling integration can be tested likeso:
 	testling -u
 	// A localhost Url will be given to run tests. Simply paste it in the browser
 
-NOTE: ci.testling.com integration was setup, but testling has had ongoing issues timing out [service timeout issues](https://github.com/substack/testling/issues/88)
-
 ## Running the demo
 
 Setup a google cloud storage with a service account as explained on the [gcs-signed-urls page](https://github.com/sfarthin/nodejs-google-cloud-storage). 
