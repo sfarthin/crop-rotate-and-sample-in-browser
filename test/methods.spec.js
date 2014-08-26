@@ -7,14 +7,25 @@ var ImageMethods = require("../src/methods.js"),
 * Lets have one array with all the parsed test data in it
 * i.e. files.IMG_0086.canvas or files.IMG_0086.blob
 **/
-var imagesToDownload = [ "IMG_0032", "IMG_0086" ];
-	files = {};
+var imagesToDownload = [ "IMG_0032", "IMG_0086" ],
+	files = {},
+	basePath;
+	
+
+if(window.__karma__) {
+	// Karma has the annoying root path of /base
+	basePath = "base/test/";
+} else {
+	// Otherwise with something like Testling
+	basePath = "test/";
+}
+
 
 jasmine.getEnv().defaultTimeoutInterval = 60 * 1000;
 
 beforeEach(function(done) {
 	
-	// Lets jsut do this once
+	// Lets just do this once
 	if(_.size(files)) {
 		done();
 		return;
@@ -24,7 +35,7 @@ beforeEach(function(done) {
 	* Helper method
 	**/
 	var parseCanvas = function(name, callback) {
-		ImageMethods.getCanvasFromUrl("/base/test/" + name + ".jpg", function(canvas, blob) {
+		ImageMethods.getCanvasFromUrl(basePath + name + ".jpg", function(canvas, blob) {
 			callback(null, {
 				blob: blob,
 				canvas: canvas,

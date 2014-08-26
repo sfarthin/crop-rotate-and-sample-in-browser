@@ -127,10 +127,23 @@ These methods follow this form except *getCanvasFromImage* which simply returns 
 
 ## Testing
 
+##### Karma
+
 Karma/Jasmine is used for [unit tests](https://github.com/sfarthin/crop-rotate-and-sample-in-browser/blob/master/test/methods.spec.js).
 
 	npm install
 	karma start
+
+##### Testling
+
+Testling integration can be tested likeso:
+
+	npm install
+	npm install -g testling
+	testling -u
+	// A localhost Url will be given to run tests. Simply paste it in the browser
+
+NOTE: ci.testling.com integration was setup, but testling has had ongoing issues timing out [service timeout issues](https://github.com/substack/testling/issues/88)
 
 ## Running the demo
 

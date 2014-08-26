@@ -5,4 +5,4 @@
 **/
 jasmine.getEnv().addReporter(new jasmineReporters.TapReporter());
 
-require("test/methods.spec.js");
+require("./test/methods.spec.js");
