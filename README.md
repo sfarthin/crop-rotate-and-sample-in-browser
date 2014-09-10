@@ -116,7 +116,7 @@ Download an image from the server, cut it into 2 pieces, and upload the pieces b
 ### Static methods
 These methods follow this form except *getCanvasFromImage* which simply returns a canvas element.
 
-	ImageMethods.getOrientationFromFile(file, function(canvas) {
+	ImageMethods.getCanvasFromFile(file, function(canvas) {
 		// Get access to the canvas element here
 	});
 	
