@@ -2,7 +2,7 @@ var EXIF = require("./exif"),
 	BinaryFile = require("./binaryFile"),
 	toBlob = require("./canvas-to-blob"),
 	async = require("async"),
-	_ = require("lodash");
+	_ = require("underscore");
 
 
 var staticMethods = {
