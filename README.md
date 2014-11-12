@@ -195,4 +195,4 @@ Remove "gcs-config.js" and "google-services-private-key.pem" from .gitignore
 	git push heroku master
 
 # Future
-- Use web workers to process resize and add new sharpen feature. This will require async methods. Start using promises so we cna continue to chain
+- Use web workers (with transferable objects) to process resize and add new sharpen feature. This will require async methods. Start using promises so we can continue to chain
