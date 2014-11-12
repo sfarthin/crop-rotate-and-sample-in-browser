@@ -11,7 +11,6 @@ See demo: [http://blooming-bastion-8931.herokuapp.com/](http://blooming-bastion-
 - Hermite sampling is used to resize images rather than canvas's drawImage. This results in a much better quality photo after resizing. See [this stackoverflow](http://stackoverflow.com/questions/18922880/html5-canvas-resize-downscale-image-high-quality/19223362#19223362).
 - The library parses EXIF meta data to always provide the correct orientation. Photos taken with older cameras rely on EXIF metadata and the browser does not take this metadata into account. See [this article](http://www.daveperrett.com/articles/2012/07/28/exif-orientation-handling-is-a-ghetto/).
 
-
 ## Install
 The library is available on bower and npm.
 
@@ -194,3 +193,6 @@ Remove "gcs-config.js" and "google-services-private-key.pem" from .gitignore
 	git commit -a
 	heroku create
 	git push heroku master
+
+# Future
+- Use web workers to process resize and add new sharpen feature. This will require async methods. Start using promises so we cna continue to chain
