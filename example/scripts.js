@@ -7,6 +7,9 @@ require("jcrop");
 angular.module("PhotoUploadApp",[])
 
 	.controller("PhotoController", function($scope, $http) {
+
+		//local scale values for shrunken user interface save
+		var xScale = 1 , yScale = 1;
 	
 		// This method is called when an input element changes using the hack below
 		$scope.selectFile = function(file) {
@@ -75,6 +78,16 @@ angular.module("PhotoUploadApp",[])
 
 			xhr.send(formData);
 		};
+
+		//Function to transform selected clip
+		function transformClip(c){
+			var rc = {};
+			rc.x = c.x / xScale;
+			rc.w = c.w / xScale;
+			rc.h = c.h / yScale;
+			rc.y = c.y / yScale;
+			return rc;
+		};
 	
 		// This is when a user clicks Finish on crop dialog
 		// It will do the final thumbnail generation and
@@ -85,7 +98,8 @@ angular.module("PhotoUploadApp",[])
 			$scope.loading = true;
 
 			// Lets grab the selected area from jCrop
-			var selection = $scope.jcrop.tellSelect();
+			// and transform it to the correct scale
+			var selection = transformClip($scope.jcrop.tellSelect());
 			
 			console.log(selection);
 	
