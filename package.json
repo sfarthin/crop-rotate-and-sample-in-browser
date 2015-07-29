@@ -79,13 +79,14 @@
     "underscore": "^1.7.0"
   },
   "devDependencies": {
-    "karma-browserify": "^0.2.1",
-    "karma": "^0.12.22",
-    "karma-jasmine": "^0.2.2",
-    "karma-phantomjs-launcher": "^0.1.4",
-    "karma-chrome-launcher": "^0.1.4",
-    "resemblejs": "^1.1.2",
+    "chromedriver": "^2.10.0-1",
     "jasmine-reporters": "^2.0.3",
-    "chromedriver": "^2.10.0-1"
+    "karma": "^0.12.22",
+    "karma-browserify": "^0.2.1",
+    "karma-chrome-launcher": "^0.2.0",
+    "karma-jasmine": "^0.3.6",
+    "karma-phantomjs-launcher": "^0.1.4",
+    "lodash": "^3.10.0",
+    "resemblejs": "^1.1.2"
   }
 }
