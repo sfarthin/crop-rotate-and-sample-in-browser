@@ -162,13 +162,20 @@ var staticMethods = {
 		
 		var reader = new FileReader();
 
-		reader.readAsBinaryString(file);
+		reader.readAsArrayBuffer(file);
 		
 		reader.onload = function(evt) {
+			var binary = "";
+			var bytes = new Uint8Array(evt.target.result);
+			var length = bytes.byteLength;
+			for (var i = 0; i < length; i++) {
+			  binary += String.fromCharCode(bytes[i]);
+			}
+			
 			var rotate,
 				
 				// Use our third party libraries to read EXIF data
-				b = new BinaryFile(evt.target.result),
+				b = new BinaryFile(binary),
 				exif = EXIF.readFromBinaryFile(b);
 		
 			// Inspired by http://www.daveperrett.com/articles/2012/07/28/exif-orientation-handling-is-a-ghetto/
