@@ -1,6 +1,6 @@
 {
   "name": "image-manipulation",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Library for rotating, cropping, and resizing images within browser",
   "main": "src/methods.js",
   "directories": {
